@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
+
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import { Thread } from "@/types/chat";
+
+import { Thread, Msg } from "@/types/chat";
 import {
   loadThreads,
   saveThreads,
@@ -13,19 +15,26 @@ import {
 export default function ChatApp() {
   const [threads, setThreads] =
     useState<Thread[]>([]);
+
   const [activeId, setActiveId] =
     useState("");
-  const [msg, setMsg] = useState("");
+
+  const [msg, setMsg] =
+    useState("");
+
   const [streaming, setStreaming] =
     useState("");
-  const [dark, setDark] = useState(true);
+
+  const [dark, setDark] =
+    useState(true);
+
   const [model, setModel] =
     useState("gpt-5");
 
   useEffect(() => {
     const t = loadThreads();
 
-    if (t.length) {
+    if (t.length > 0) {
       setThreads(t);
       setActiveId(t[0].id);
     } else {
@@ -40,79 +49,108 @@ export default function ChatApp() {
   function createThread() {
     const id = uuid();
 
-    const t = {
+    const newThread: Thread = {
       id,
       title: "New Chat",
       createdAt: Date.now(),
       messages: [],
     };
 
-    setThreads((prev) => [t, ...prev]);
+    setThreads((prev) => [
+      newThread,
+      ...prev,
+    ]);
+
     setActiveId(id);
   }
 
   const active =
-    threads.find((x) => x.id === activeId);
+    threads.find(
+      (x) => x.id === activeId
+    );
 
   async function send() {
     if (!active || !msg.trim()) return;
 
-    const updated = threads.map((t) =>
-      t.id === activeId
-        ? {
-            ...t,
-            title:
-              t.messages.length === 0
-                ? msg.slice(0, 30)
-                : t.title,
-            messages: [
-              ...t.messages,
-              {
-                role: "user",
-                content: msg,
-              },
-            ],
-          }
-        : t
-    );
+    const userMsg: Msg = {
+      role: "user",
+      content: msg,
+    };
+
+    const updated: Thread[] =
+      threads.map((t) =>
+        t.id === activeId
+          ? {
+              ...t,
+              title:
+                t.messages.length === 0
+                  ? msg.slice(0, 30)
+                  : t.title,
+              messages: [
+                ...t.messages,
+                userMsg,
+              ],
+            }
+          : t
+      );
 
     setThreads(updated);
+
     setMsg("");
     setStreaming("");
 
-    const thread = updated.find(
-      (x) => x.id === activeId
-    );
+    const thread =
+      updated.find(
+        (x) => x.id === activeId
+      );
 
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      body: JSON.stringify({
-        model,
-        messages: thread?.messages,
-      }),
-    });
+    const res = await fetch(
+      "/api/chat",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          model,
+          messages:
+            thread?.messages ||
+            [],
+        }),
+      }
+    );
 
     const reader =
       res.body?.getReader();
 
     if (!reader) return;
 
-    const decoder = new TextDecoder();
+    const decoder =
+      new TextDecoder();
 
     let final = "";
 
     while (true) {
-      const { done, value } =
-        await reader.read();
+      const {
+        done,
+        value,
+      } = await reader.read();
 
       if (done) break;
 
       const chunk =
-        decoder.decode(value);
+        decoder.decode(
+          value
+        );
 
       final += chunk;
-      setStreaming(final);
+
+      setStreaming(
+        final
+      );
     }
+
+    const botMsg: Msg = {
+      role: "assistant",
+      content: final,
+    };
 
     setThreads((prev) =>
       prev.map((t) =>
@@ -121,10 +159,7 @@ export default function ChatApp() {
               ...t,
               messages: [
                 ...t.messages,
-                {
-                  role: "assistant",
-                  content: final,
-                },
+                botMsg,
               ],
             }
           : t
@@ -138,62 +173,100 @@ export default function ChatApp() {
     <main
       className={
         dark
-          ? "dark bg-zinc-950 text-white"
+          ? "bg-zinc-950 text-white"
           : "bg-white text-black"
       }
     >
       <div className="flex h-screen">
+
         <Sidebar
           threads={threads}
           activeId={activeId}
-          setActiveId={setActiveId}
-          createThread={createThread}
+          setActiveId={
+            setActiveId
+          }
+          createThread={
+            createThread
+          }
         />
 
         <section className="flex-1 flex flex-col">
+
           <Topbar
             dark={dark}
-            setDark={setDark}
+            setDark={
+              setDark
+            }
             model={model}
-            setModel={setModel}
+            setModel={
+              setModel
+            }
           />
 
-          <div className="flex-1 overflow-auto p-6 space-y-5">
+          <div className="flex-1 overflow-auto p-6 space-y-4">
+
             {active?.messages.map(
-              (m, i) => (
+              (
+                m,
+                i
+              ) => (
                 <div key={i}>
-                  <b>{m.role}:</b>
-                  <div>{m.content}</div>
+                  <b>
+                    {m.role}:
+                  </b>
+                  <div>
+                    {
+                      m.content
+                    }
+                  </div>
                 </div>
               )
             )}
 
             {streaming && (
               <div>
-                <b>assistant:</b>
-                <div>{streaming}</div>
+                <b>
+                  assistant:
+                </b>
+                <div>
+                  {
+                    streaming
+                  }
+                </div>
               </div>
             )}
+
           </div>
 
           <div className="border-t p-4 flex gap-3">
+
             <textarea
               rows={3}
               value={msg}
-              onChange={(e) =>
-                setMsg(e.target.value)
+              onChange={(
+                e
+              ) =>
+                setMsg(
+                  e.target
+                    .value
+                )
               }
               className="flex-1 border rounded p-3 text-black"
             />
 
             <button
-              onClick={send}
-              className="px-6 rounded bg-black text-white"
+              onClick={
+                send
+              }
+              className="px-6 bg-black text-white rounded"
             >
               Send
             </button>
+
           </div>
+
         </section>
+
       </div>
     </main>
   );
