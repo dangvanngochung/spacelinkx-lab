@@ -11,8 +11,8 @@ export default function ChatApp() {
   const [activeId, setActiveId] = useState("");
   const [msg, setMsg] = useState("");
   const [streaming, setStreaming] = useState("");
-  const [theme, setTheme] = useState("midnight");
-  const [model, setModel] = useState("gpt-5");
+  const [theme, setTheme] = useState("light");
+  const [model, setModel] = useState("gpt-4.1-mini");
 
   useEffect(() => {
     const savedTheme =

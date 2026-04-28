@@ -42,8 +42,8 @@ export default function Topbar({
         </select>
       </div>
 
-      <div className="text-sm opacity-70">
-        SpaceLinkX Lab
+      <div className="text-sm tracking-[0.25em] font-semibold opacity-80">
+        SPACE LINK X Lab
       </div>
     </header>
   );
