@@ -1,35 +1,49 @@
 "use client";
 
-import { Thread } from "@/types/chat";
+import { Trash2 } from "lucide-react";
 
 export default function Sidebar({
   threads,
   activeId,
   setActiveId,
   createThread,
+  deleteThread,
 }: any) {
   return (
     <aside className="w-72 border-r h-screen overflow-auto p-3">
       <button
         onClick={createThread}
-        className="w-full border rounded p-3 mb-3"
+        className="w-full rounded-xl p-3 mb-3 border hover:opacity-80"
       >
         + New Chat
       </button>
 
-      {threads.map((t: Thread) => (
-        <button
-          key={t.id}
-          onClick={() => setActiveId(t.id)}
-          className={`w-full text-left p-3 rounded mb-2 ${
-            activeId === t.id
-              ? "bg-zinc-200 dark:bg-zinc-700"
-              : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
-          }`}
-        >
-          {t.title}
-        </button>
-      ))}
+      <div className="space-y-2">
+        {threads.map((t: any) => (
+          <div
+            key={t.id}
+            className={`group rounded-xl p-3 flex items-center justify-between ${
+              activeId === t.id
+                ? "bg-white/10"
+                : "hover:bg-white/5"
+            }`}
+          >
+            <button
+              onClick={() => setActiveId(t.id)}
+              className="text-left flex-1 truncate"
+            >
+              {t.title}
+            </button>
+
+            <button
+              onClick={() => deleteThread(t.id)}
+              className="opacity-0 group-hover:opacity-100 transition"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
     </aside>
   );
 }
