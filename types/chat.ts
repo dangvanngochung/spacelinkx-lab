@@ -7,5 +7,6 @@ export type Thread = {
   id: string;
   title: string;
   createdAt: number;
+  folder?: string;
   messages: Msg[];
 };

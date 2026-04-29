@@ -41,6 +41,7 @@
 - Smooth auto-scroll on updates.
 - Mobile sidebar drawer UX.
 - Thread rename inline.
+- Folder-based thread grouping/filtering in sidebar.
 - Stronger search: match title + message content.
 
 ## 6) Current Data Model
@@ -54,6 +55,7 @@ Thread = {
   id: string;
   title: string;
   createdAt: number;
+  folder?: string;
   messages: Msg[];
 }
 ```
@@ -99,9 +101,9 @@ README.md
 - [ ] Upgrade markdown engine to production-safe parser (remark/rehype stack)
 - [ ] Syntax highlighting theme consistency
 
-## Phase 2B (Thread Management) — status: **45%**
+## Phase 2B (Thread Management) — status: **70%**
 - [x] Rename chat
-- [ ] Folder chats (labels/groups)
+- [x] Folder chats (labels/groups)
 - [x] Stronger search (title + message)
 - [ ] Pin/recent sorting + keyboard shortcuts
 
@@ -139,10 +141,10 @@ README.md
 13. Performance budgets + monitoring.
 
 ## 11) Next Implementation Targets (for next deployment)
-1. Implement **folder chats** (Phase 2B).
-2. Upgrade markdown renderer to **production parser** with robust safety.
-3. Add file upload UI shell (Phase 2C starter).
-4. Add token usage tracking in response metadata (Phase 2D starter).
+1. Upgrade markdown renderer to **production parser** with robust safety.
+2. Add file upload UI shell (Phase 2C starter).
+3. Add token usage tracking in response metadata (Phase 2D starter).
+4. Add pin/recent sorting + keyboard shortcuts (Phase 2B finish).
 
 ## 12) Build/Deployment Notes
 - Keep premium SPACE LINK X branding strict.

@@ -135,6 +135,7 @@ function makeNewThread(): Thread {
     id: uuid(),
     title: "New chat",
     createdAt: Date.now(),
+    folder: "general",
     messages: [],
   };
 }
@@ -151,6 +152,12 @@ export default function ChatApp() {
   const [model, setModel] = useState("gpt-4.1-mini");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesRef = useRef<HTMLDivElement | null>(null);
+  const [activeFolder, setActiveFolder] = useState("all");
+
+  const folders = useMemo(() => {
+    const set = new Set(threads.map((t) => t.folder ?? "general"));
+    return Array.from(set);
+  }, [threads]);
 
 
   useEffect(() => {
@@ -260,6 +267,9 @@ export default function ChatApp() {
         >
           <Sidebar
             threads={threads}
+            folders={folders}
+            activeFolder={activeFolder}
+            setActiveFolder={setActiveFolder}
             activeId={activeId}
             setActiveId={(id: string) => {
               setActiveId(id);
@@ -268,11 +278,10 @@ export default function ChatApp() {
             createThread={createThread}
             deleteThread={deleteThread}
             renameThread={(id: string, title: string) => {
-              setThreads((prev) =>
-                prev.map((t) =>
-                  t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t,
-                ),
-              );
+              setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t)));
+            }}
+            moveThreadFolder={(id: string, folder: string) => {
+              setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, folder } : t)));
             }}
           />
         </div>
@@ -281,16 +290,18 @@ export default function ChatApp() {
       <div className="hidden md:block">
         <Sidebar
           threads={threads}
+          folders={folders}
+          activeFolder={activeFolder}
+          setActiveFolder={setActiveFolder}
           activeId={activeId}
           setActiveId={setActiveId}
           createThread={createThread}
           deleteThread={deleteThread}
           renameThread={(id: string, title: string) => {
-            setThreads((prev) =>
-              prev.map((t) =>
-                t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t,
-              ),
-            );
+            setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t)));
+          }}
+          moveThreadFolder={(id: string, folder: string) => {
+            setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, folder } : t)));
           }}
         />
       </div>
