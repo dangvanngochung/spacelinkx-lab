@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, Plus, Search } from "lucide-react";
+import { Check, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import type { Thread } from "@/types/chat";
 
@@ -14,6 +14,8 @@ type SidebarProps = {
 
 export default function Sidebar({ threads, activeId, setActiveId, createThread, deleteThread }: SidebarProps) {
   const [search, setSearch] = useState("");
+  const [editingId, setEditingId] = useState("");
+  const [draftTitle, setDraftTitle] = useState("");
 
   const filtered = threads.filter((t) => t.title.toLowerCase().includes(search.toLowerCase()));
 
