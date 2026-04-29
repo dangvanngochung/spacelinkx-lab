@@ -267,6 +267,13 @@ export default function ChatApp() {
             }}
             createThread={createThread}
             deleteThread={deleteThread}
+            renameThread={(id: string, title: string) => {
+              setThreads((prev) =>
+                prev.map((t) =>
+                  t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t,
+                ),
+              );
+            }}
           />
         </div>
       </div>
@@ -278,6 +285,13 @@ export default function ChatApp() {
           setActiveId={setActiveId}
           createThread={createThread}
           deleteThread={deleteThread}
+          renameThread={(id: string, title: string) => {
+            setThreads((prev) =>
+              prev.map((t) =>
+                t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t,
+              ),
+            );
+          }}
         />
       </div>
 
