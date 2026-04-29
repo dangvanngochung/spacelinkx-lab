@@ -16,6 +16,7 @@ type SidebarProps = {
   renameThread: (id: string, title: string) => void;
   moveThreadFolder: (id: string, folder: string) => void;
   createFolder: (name: string) => void;
+  deleteFolder: (name: string) => void;
 };
 
 export default function Sidebar({
@@ -30,6 +31,7 @@ export default function Sidebar({
   renameThread,
   moveThreadFolder,
   createFolder: createFolderProp,
+  deleteFolder,
 }: SidebarProps) {
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState("");
@@ -77,6 +79,18 @@ export default function Sidebar({
           {folders.map((f) => (
             <button key={f} onClick={() => setActiveFolder(f)} className={`text-xs px-2.5 py-1.5 rounded-lg border inline-flex items-center gap-1 ${activeFolder === f ? "bg-zinc-700 border-zinc-600" : "border-zinc-700 text-zinc-400"}`}>
               <Folder size={12} /> {f}
+              {f !== "general" && (
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteFolder(f);
+                  }}
+                  className="ml-1 text-zinc-400 hover:text-white"
+                  role="button"
+                >
+                  <X size={11} />
+                </span>
+              )}
             </button>
           ))}
         </div>

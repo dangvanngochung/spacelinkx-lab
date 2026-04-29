@@ -42,7 +42,9 @@
 - Mobile sidebar drawer UX.
 - Thread rename inline.
 - Folder-based thread grouping/filtering in sidebar.
+- Folder create/delete (with confirm + thread migration notice).
 - Stronger search: match title + message content.
+- Theme switcher (SLX Light / Dark / Ocean).
 
 ## 6) Current Data Model
 ```ts
@@ -91,7 +93,7 @@ README.md
 
 ## 9) Phase 2 Completion Plan (Pro)
 
-## Phase 2A (Core UX + Rendering) — status: **80%**
+## Phase 2A (Core UX + Rendering) — status: **85%**
 - [x] Markdown render baseline
 - [x] Code blocks + copy
 - [x] Spacing polish
@@ -100,8 +102,9 @@ README.md
 - [x] Mobile sidebar drawer
 - [ ] Upgrade markdown engine to production-safe parser (remark/rehype stack)
 - [ ] Syntax highlighting theme consistency
+- [x] App theme switcher (light/dark/ocean presets)
 
-## Phase 2B (Thread Management) — status: **70%**
+## Phase 2B (Thread Management) — status: **80%**
 - [x] Rename chat
 - [x] Folder chats (labels/groups)
 - [x] Stronger search (title + message)
