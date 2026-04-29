@@ -10,28 +10,14 @@ type SidebarProps = {
   setActiveId: (id: string) => void;
   createThread: () => void;
   deleteThread: (id: string) => void;
-  renameThread: (id: string, title: string) => void;
 };
 
-export default function Sidebar({
-  threads,
-  activeId,
-  setActiveId,
-  createThread,
-  deleteThread,
-  renameThread,
-}: SidebarProps) {
+export default function Sidebar({ threads, activeId, setActiveId, createThread, deleteThread }: SidebarProps) {
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState("");
   const [draftTitle, setDraftTitle] = useState("");
 
-  const keyword = search.trim().toLowerCase();
-  const filtered = threads.filter((t) => {
-    if (!keyword) return true;
-    const inTitle = t.title.toLowerCase().includes(keyword);
-    const inMessages = t.messages.some((m) => m.content.toLowerCase().includes(keyword));
-    return inTitle || inMessages;
-  });
+  const filtered = threads.filter((t) => t.title.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <aside className="w-[290px] bg-zinc-950 text-zinc-100 border-r border-zinc-800 h-screen flex flex-col">
@@ -71,53 +57,16 @@ export default function Sidebar({
                 activeId === t.id ? "bg-zinc-800" : "hover:bg-zinc-900"
               }`}
             >
-              {editingId === t.id ? (
-                <input
-                  autoFocus
-                  value={draftTitle}
-                  onChange={(e) => setDraftTitle(e.target.value)}
-                  className="flex-1 bg-zinc-900 text-sm rounded px-2 py-1 outline-none"
-                />
-              ) : (
-                <button onClick={() => setActiveId(t.id)} className="flex-1 text-left truncate text-sm">
-                  {t.title}
-                </button>
-              )}
+              <button onClick={() => setActiveId(t.id)} className="flex-1 text-left truncate text-sm">
+                {t.title}
+              </button>
 
-              {editingId === t.id ? (
-                <>
-                  <button
-                    onClick={() => {
-                      renameThread(t.id, draftTitle);
-                      setEditingId("");
-                    }}
-                    className="text-zinc-300 hover:text-white"
-                  >
-                    <Check size={14} />
-                  </button>
-                  <button onClick={() => setEditingId("")} className="text-zinc-500 hover:text-zinc-200">
-                    <X size={14} />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setEditingId(t.id);
-                      setDraftTitle(t.title);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 transition text-zinc-400 hover:text-white"
-                  >
-                    <Pencil size={14} />
-                  </button>
-                  <button
-                    onClick={() => deleteThread(t.id)}
-                    className="opacity-0 group-hover:opacity-100 transition text-zinc-400 hover:text-white"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </>
-              )}
+              <button
+                onClick={() => deleteThread(t.id)}
+                className="opacity-0 group-hover:opacity-100 transition text-zinc-400 hover:text-white"
+              >
+                <Trash2 size={15} />
+              </button>
             </div>
           ))}
         </div>
