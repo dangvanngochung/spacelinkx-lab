@@ -5,7 +5,7 @@ import { Copy, Menu, X } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import { loadThreads, saveThreads } from "@/lib/storage";
+import { loadFolders, loadThreads, saveFolders, saveThreads } from "@/lib/storage";
 import type { Msg, Thread } from "@/types/chat";
 
 function MarkdownMessage({ content }: { content: string }) {
@@ -152,17 +152,23 @@ export default function ChatApp() {
   const [model, setModel] = useState("gpt-4.1-mini");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesRef = useRef<HTMLDivElement | null>(null);
+  const [folders, setFolders] = useState<string[]>(() => {
+    if (typeof window === "undefined") return ["general"];
+    const fromStorage = loadFolders();
+    const fromThreads = loadThreads().map((t) => (t.folder ?? "general").trim().toLowerCase());
+    return Array.from(new Set(["general", ...fromStorage, ...fromThreads]));
+  });
   const [activeFolder, setActiveFolder] = useState("all");
-
-  const folders = useMemo(() => {
-    const set = new Set(threads.map((t) => t.folder ?? "general"));
-    return Array.from(set);
-  }, [threads]);
 
 
   useEffect(() => {
     saveThreads(threads);
   }, [threads]);
+
+  useEffect(() => {
+    saveFolders(folders);
+  }, [folders]);
+
 
   useEffect(() => {
     messagesRef.current?.scrollTo({
@@ -281,7 +287,13 @@ export default function ChatApp() {
               setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t)));
             }}
             moveThreadFolder={(id: string, folder: string) => {
-              setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, folder } : t)));
+              const normalized = folder.trim().toLowerCase();
+              setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, folder: normalized } : t)));
+              setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
+            }}
+            createFolder={(name: string) => {
+              const normalized = name.trim().toLowerCase();
+              setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
             }}
           />
         </div>
@@ -301,7 +313,13 @@ export default function ChatApp() {
             setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title: title.trim().slice(0, 80) || "Untitled chat" } : t)));
           }}
           moveThreadFolder={(id: string, folder: string) => {
-            setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, folder } : t)));
+            const normalized = folder.trim().toLowerCase();
+            setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, folder: normalized } : t)));
+            setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
+          }}
+          createFolder={(name: string) => {
+            const normalized = name.trim().toLowerCase();
+            setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
           }}
         />
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Folder, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Check, Folder, FolderPlus, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Thread } from "@/types/chat";
 
@@ -15,6 +15,7 @@ type SidebarProps = {
   deleteThread: (id: string) => void;
   renameThread: (id: string, title: string) => void;
   moveThreadFolder: (id: string, folder: string) => void;
+  createFolder: (name: string) => void;
 };
 
 export default function Sidebar({
@@ -28,10 +29,20 @@ export default function Sidebar({
   deleteThread,
   renameThread,
   moveThreadFolder,
+  createFolder: createFolderProp,
 }: SidebarProps) {
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState("");
   const [draftTitle, setDraftTitle] = useState("");
+  const [newFolder, setNewFolder] = useState("");
+
+  function createFolder() {
+    const name = newFolder.trim().toLowerCase();
+    if (!name) return;
+    createFolderProp(name);
+    setActiveFolder(name);
+    setNewFolder("");
+  }
 
   const keyword = search.trim().toLowerCase();
 
@@ -60,23 +71,23 @@ export default function Sidebar({
         </button>
       </div>
 
-      <div className="px-4 pb-3">
+      <div className="px-4 pb-3 space-y-2">
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setActiveFolder("all")}
-            className={`text-xs px-2.5 py-1.5 rounded-lg border ${activeFolder === "all" ? "bg-zinc-700 border-zinc-600" : "border-zinc-700 text-zinc-400"}`}
-          >
-            All
-          </button>
+          <button onClick={() => setActiveFolder("all")} className={`text-xs px-2.5 py-1.5 rounded-lg border ${activeFolder === "all" ? "bg-zinc-700 border-zinc-600" : "border-zinc-700 text-zinc-400"}`}>All</button>
           {folders.map((f) => (
-            <button
-              key={f}
-              onClick={() => setActiveFolder(f)}
-              className={`text-xs px-2.5 py-1.5 rounded-lg border inline-flex items-center gap-1 ${activeFolder === f ? "bg-zinc-700 border-zinc-600" : "border-zinc-700 text-zinc-400"}`}
-            >
+            <button key={f} onClick={() => setActiveFolder(f)} className={`text-xs px-2.5 py-1.5 rounded-lg border inline-flex items-center gap-1 ${activeFolder === f ? "bg-zinc-700 border-zinc-600" : "border-zinc-700 text-zinc-400"}`}>
               <Folder size={12} /> {f}
             </button>
           ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            value={newFolder}
+            onChange={(e) => setNewFolder(e.target.value)}
+            placeholder="new folder"
+            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-2 py-1 text-xs outline-none"
+          />
+          <button onClick={createFolder} className="text-zinc-300 hover:text-white"><FolderPlus size={15} /></button>
         </div>
       </div>
 
@@ -102,6 +113,7 @@ export default function Sidebar({
                     {folders.map((f) => (
                       <option key={f}>{f}</option>
                     ))}
+                    {newFolder.trim() && <option>{newFolder.trim().toLowerCase()}</option>}
                   </select>
                 </div>
               ) : (
