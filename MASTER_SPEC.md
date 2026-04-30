@@ -25,8 +25,10 @@
 
 ## 5) Current Feature State (After latest update)
 ### Authentication
-- Password gate before entering app.
-- Unlock token stored in localStorage key `slx_unlock=1`.
+- Google sign-in gate via Google Identity Services popup account chooser.
+- Google session flag stored localStorage `slx_google_login=1` and profile in `slx_user`.
+- Password gate still applied after Google login as second layer.
+- Unlock token stored localStorage key `slx_unlock=1`.
 
 ### Chat Core
 - Streaming chat response via `/api/chat`.
@@ -41,7 +43,12 @@
 - Smooth auto-scroll on updates.
 - Mobile sidebar drawer UX.
 - Thread rename inline.
+- Folder-based thread grouping/filtering in sidebar.
+- Folder create/delete (with confirm + thread migration notice).
+- Quick move chat between folders from sidebar thread row.
+- Pin/Unpin chat in sidebar with pinned-first sorting.
 - Stronger search: match title + message content.
+- Theme switcher (SLX Light / Dark / Ocean).
 
 ## 6) Current Data Model
 ```ts
@@ -54,6 +61,7 @@ Thread = {
   id: string;
   title: string;
   createdAt: number;
+  folder?: string;
   messages: Msg[];
 }
 ```
@@ -89,7 +97,7 @@ README.md
 
 ## 9) Phase 2 Completion Plan (Pro)
 
-## Phase 2A (Core UX + Rendering) — status: **80%**
+## Phase 2A (Core UX + Rendering) — status: **85%**
 - [x] Markdown render baseline
 - [x] Code blocks + copy
 - [x] Spacing polish
@@ -98,12 +106,15 @@ README.md
 - [x] Mobile sidebar drawer
 - [ ] Upgrade markdown engine to production-safe parser (remark/rehype stack)
 - [ ] Syntax highlighting theme consistency
+- [x] App theme switcher (light/dark/ocean presets)
 
-## Phase 2B (Thread Management) — status: **45%**
+## Phase 2B (Thread Management) — status: **92%**
 - [x] Rename chat
-- [ ] Folder chats (labels/groups)
+- [x] Folder chats (labels/groups)
 - [x] Stronger search (title + message)
-- [ ] Pin/recent sorting + keyboard shortcuts
+- [x] Pin/recent sorting baseline (pinned-first)
+- [ ] Keyboard shortcuts
+- [x] Quick move chat across folders (inline)
 
 ## Phase 2C (Files + Multimodal) — status: **0%**
 - [ ] Drag-drop upload zone
@@ -139,10 +150,12 @@ README.md
 13. Performance budgets + monitoring.
 
 ## 11) Next Implementation Targets (for next deployment)
-1. Implement **folder chats** (Phase 2B).
-2. Upgrade markdown renderer to **production parser** with robust safety.
-3. Add file upload UI shell (Phase 2C starter).
-4. Add token usage tracking in response metadata (Phase 2D starter).
+1. Backend verify Google ID token server-side and replace local-only login flag with secure session cookie.
+2. Add keyboard shortcuts (new chat, focus search, move thread quick actions).
+3. Add drag-drop thread move between folder chips (Phase 2B polish).
+4. Upgrade markdown renderer to **production parser** with robust safety.
+5. Add file upload UI shell (Phase 2C starter).
+6. Add token usage tracking in response metadata (Phase 2D starter).
 
 ## 12) Build/Deployment Notes
 - Keep premium SPACE LINK X branding strict.
