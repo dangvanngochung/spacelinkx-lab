@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import PasswordGate from "@/components/PasswordGate";
 import ChatApp from "@/components/ChatApp";
 import GoogleAuthGate from "@/components/GoogleAuthGate";
@@ -17,15 +17,11 @@ const getServerSnapshot = () => false;
 const getUnlockSnapshot = () => localStorage.getItem("slx_unlock") === "1";
 
 export default function Page() {
-  const ok = useSyncExternalStore(subscribe, getUnlockSnapshot, getServerSnapshot);
+  const [ok, setOk] = useState(false);
 
-  if (!googleOk) {
-    return (
-      <main className="min-h-screen bg-zinc-50 flex items-center justify-center p-6">
-        <GoogleAuthGate onSuccess={() => setGoogleOk(true)} />
-      </main>
-    );
-  }
+  useEffect(() => {
+    setOk(localStorage.getItem("slx_unlock") === "1");
+  }, []);
 
   if (!ok) {
     return (
