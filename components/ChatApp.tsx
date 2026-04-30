@@ -141,12 +141,7 @@ function makeNewThread(): Thread {
   };
 }
 
-export default function ChatApp() {
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+export default function ChatApp({ onSignOut }: { onSignOut: () => void }) {
   const [threads, setThreads] = useState<Thread[]>(() => {
     if (typeof window === "undefined") return [makeNewThread()];
     const stored = loadThreads();
@@ -365,7 +360,7 @@ export default function ChatApp() {
       </div>
 
       <section className="flex-1 flex flex-col min-w-0">
-        <Topbar model={model} setModel={setModel} theme={theme} setTheme={setTheme} />
+        <Topbar model={model} setModel={setModel} theme={theme} setTheme={setTheme} onSignOut={onSignOut} />
 
         <div className="md:hidden border-b border-zinc-200 px-4 py-2 flex justify-between">
           <button onClick={() => setSidebarOpen(true)} className="inline-flex items-center gap-2 text-sm text-zinc-700">

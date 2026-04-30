@@ -5,9 +5,10 @@ type TopbarProps = {
   setModel: (model: string) => void;
   theme: string;
   setTheme: (theme: string) => void;
+  onSignOut: () => void;
 };
 
-export default function Topbar({ model, setModel, theme, setTheme }: TopbarProps) {
+export default function Topbar({ model, setModel, theme, setTheme, onSignOut }: TopbarProps) {
   return (
     <header className="h-16 border-b border-zinc-200 bg-white flex items-center justify-between px-6">
       <div className="font-medium text-zinc-700">SPACE LINK X Lab</div>
@@ -32,6 +33,13 @@ export default function Topbar({ model, setModel, theme, setTheme }: TopbarProps
         <option value="slx-dark">SLX Dark</option>
         <option value="slx-ocean">SLX Ocean</option>
       </select>
+
+      <button
+        onClick={onSignOut}
+        className="border border-zinc-300 rounded-xl px-3 py-2 text-sm bg-white ml-3 hover:bg-zinc-100"
+      >
+        Sign out
+      </button>
     </header>
   );
 }

@@ -29,17 +29,27 @@ function getServerSnapshot() {
   return false;
 }
 
-export default function Page() {
-  const [justUnlocked, setJustUnlocked] = useState(false);
-  const persistedUnlock = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
+function useUnlockStatus() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => localStorage.getItem("slx_unlock") === "1",
+    () => false,
   );
+}
 
-  if (!justUnlocked && !persistedUnlock) {
+export default function Page() {
+  const persistedUnlock = useUnlockStatus();
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const ok = persistedUnlock || justUnlocked;
+
+  function handleSignOut() {
+    localStorage.removeItem("slx_unlock");
+    setJustUnlocked(false);
+  }
+
+  if (!ok) {
     return <PasswordGate onUnlock={() => setJustUnlocked(true)} />;
   }
 
-  return <ChatApp />;
+  return <ChatApp onSignOut={handleSignOut} />;
 }
