@@ -22,6 +22,7 @@ export default function PasswordGate({
 
     if (res.ok) {
       localStorage.setItem("slx_unlock", "1");
+      window.dispatchEvent(new Event("slx_unlock_change"));
       onUnlock();
     } else {
       setErr("Wrong password");
