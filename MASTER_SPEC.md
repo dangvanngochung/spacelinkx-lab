@@ -44,6 +44,7 @@
 - Folder-based thread grouping/filtering in sidebar.
 - Folder create/delete (with confirm + thread migration notice).
 - Quick move chat between folders from sidebar thread row.
+- Pin/Unpin chat in sidebar with pinned-first sorting.
 - Stronger search: match title + message content.
 - Theme switcher (SLX Light / Dark / Ocean).
 
@@ -105,11 +106,12 @@ README.md
 - [ ] Syntax highlighting theme consistency
 - [x] App theme switcher (light/dark/ocean presets)
 
-## Phase 2B (Thread Management) — status: **88%**
+## Phase 2B (Thread Management) — status: **92%**
 - [x] Rename chat
 - [x] Folder chats (labels/groups)
 - [x] Stronger search (title + message)
-- [ ] Pin/recent sorting + keyboard shortcuts
+- [x] Pin/recent sorting baseline (pinned-first)
+- [ ] Keyboard shortcuts
 - [x] Quick move chat across folders (inline)
 
 ## Phase 2C (Files + Multimodal) — status: **0%**
@@ -146,11 +148,11 @@ README.md
 13. Performance budgets + monitoring.
 
 ## 11) Next Implementation Targets (for next deployment)
-1. Add drag-drop thread move between folder chips (Phase 2B polish).
-2. Upgrade markdown renderer to **production parser** with robust safety.
-3. Add file upload UI shell (Phase 2C starter).
-4. Add token usage tracking in response metadata (Phase 2D starter).
-5. Add pin/recent sorting + keyboard shortcuts (Phase 2B finish).
+1. Add keyboard shortcuts (new chat, focus search, move thread quick actions).
+2. Add drag-drop thread move between folder chips (Phase 2B polish).
+3. Upgrade markdown renderer to **production parser** with robust safety.
+4. Add file upload UI shell (Phase 2C starter).
+5. Add token usage tracking in response metadata (Phase 2D starter).
 
 ## 12) Build/Deployment Notes
 - Keep premium SPACE LINK X branding strict.

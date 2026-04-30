@@ -136,6 +136,7 @@ function makeNewThread(): Thread {
     title: "New chat",
     createdAt: Date.now(),
     folder: "general",
+    pinned: false,
     messages: [],
   };
 }
@@ -317,6 +318,9 @@ export default function ChatApp() {
               setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
             }}
             deleteFolder={deleteFolder}
+            togglePinThread={(id: string) => {
+              setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, pinned: !t.pinned } : t)));
+            }}
           />
         </div>
       </div>
@@ -344,6 +348,9 @@ export default function ChatApp() {
             setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
           }}
           deleteFolder={deleteFolder}
+          togglePinThread={(id: string) => {
+            setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, pinned: !t.pinned } : t)));
+          }}
         />
       </div>
 

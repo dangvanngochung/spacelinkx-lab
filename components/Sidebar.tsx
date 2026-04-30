@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightLeft, Check, Folder, FolderPlus, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { ArrowRightLeft, Check, Folder, FolderPlus, Pencil, Pin, Plus, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Thread } from "@/types/chat";
 
@@ -17,6 +17,7 @@ type SidebarProps = {
   moveThreadFolder: (id: string, folder: string) => void;
   createFolder: (name: string) => void;
   deleteFolder: (name: string) => void;
+  togglePinThread: (id: string) => void;
 };
 
 export default function Sidebar({
@@ -32,6 +33,7 @@ export default function Sidebar({
   moveThreadFolder,
   createFolder: createFolderProp,
   deleteFolder,
+  togglePinThread,
 }: SidebarProps) {
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState("");
@@ -57,6 +59,10 @@ export default function Sidebar({
       const inTitle = t.title.toLowerCase().includes(keyword);
       const inMessages = t.messages.some((m) => m.content.toLowerCase().includes(keyword));
       return inTitle || inMessages;
+    }).sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return b.createdAt - a.createdAt;
     });
   }, [threads, activeFolder, keyword]);
 
@@ -160,6 +166,7 @@ export default function Sidebar({
                 </>
               ) : (
                 <>
+                  <button onClick={() => togglePinThread(t.id)} className={`opacity-100 md:opacity-0 md:group-hover:opacity-100 transition ${t.pinned ? "text-yellow-300" : "text-zinc-400 hover:text-white"}`}><Pin size={14} /></button>
                   <button onClick={() => { setMovingId(movingId === t.id ? "" : t.id); }} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-zinc-400 hover:text-white"><ArrowRightLeft size={14} /></button>
                   <button onClick={() => { setEditingId(t.id); setDraftTitle(t.title); }} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-zinc-400 hover:text-white"><Pencil size={14} /></button>
                   <button onClick={() => deleteThread(t.id)} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-zinc-400 hover:text-white"><Trash2 size={15} /></button>
