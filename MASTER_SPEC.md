@@ -25,8 +25,10 @@
 
 ## 5) Current Feature State (After latest update)
 ### Authentication
-- Password gate before entering app.
-- Unlock token stored in localStorage key `slx_unlock=1`.
+- Google sign-in gate via Google Identity Services popup account chooser.
+- Google session flag stored localStorage `slx_google_login=1` and profile in `slx_user`.
+- Password gate still applied after Google login as second layer.
+- Unlock token stored localStorage key `slx_unlock=1`.
 
 ### Chat Core
 - Streaming chat response via `/api/chat`.
@@ -148,11 +150,12 @@ README.md
 13. Performance budgets + monitoring.
 
 ## 11) Next Implementation Targets (for next deployment)
-1. Add keyboard shortcuts (new chat, focus search, move thread quick actions).
-2. Add drag-drop thread move between folder chips (Phase 2B polish).
-3. Upgrade markdown renderer to **production parser** with robust safety.
-4. Add file upload UI shell (Phase 2C starter).
-5. Add token usage tracking in response metadata (Phase 2D starter).
+1. Backend verify Google ID token server-side and replace local-only login flag with secure session cookie.
+2. Add keyboard shortcuts (new chat, focus search, move thread quick actions).
+3. Add drag-drop thread move between folder chips (Phase 2B polish).
+4. Upgrade markdown renderer to **production parser** with robust safety.
+5. Add file upload UI shell (Phase 2C starter).
+6. Add token usage tracking in response metadata (Phase 2D starter).
 
 ## 12) Build/Deployment Notes
 - Keep premium SPACE LINK X branding strict.
