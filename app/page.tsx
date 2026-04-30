@@ -1,17 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import PasswordGate from "@/components/PasswordGate";
 import ChatApp from "@/components/ChatApp";
 
-export default function Page() {
-  const [ok, setOk] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("slx_unlock") === "1";
-  });
+function subscribe(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+}
 
-  if (!ok) {
-    return <PasswordGate onUnlock={() => setOk(true)} />;
+function getSnapshot() {
+  return localStorage.getItem("slx_unlock") === "1";
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+export default function Page() {
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const persistedUnlock = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
+
+  if (!justUnlocked && !persistedUnlock) {
+    return <PasswordGate onUnlock={() => setJustUnlocked(true)} />;
   }
 
   return <ChatApp />;
