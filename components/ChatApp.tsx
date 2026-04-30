@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Copy, Menu, X } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import Sidebar from "./Sidebar";
@@ -142,6 +142,11 @@ function makeNewThread(): Thread {
 }
 
 export default function ChatApp() {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [threads, setThreads] = useState<Thread[]>(() => {
     if (typeof window === "undefined") return [makeNewThread()];
     const stored = loadThreads();
@@ -165,14 +170,15 @@ export default function ChatApp() {
   });
   const [activeFolder, setActiveFolder] = useState("all");
 
-
   useEffect(() => {
+    if (!mounted) return;
     saveThreads(threads);
-  }, [threads]);
+  }, [mounted, threads]);
 
   useEffect(() => {
+    if (!mounted) return;
     saveFolders(folders);
-  }, [folders]);
+  }, [folders, mounted]);
 
   useEffect(() => {
     localStorage.setItem("slx_theme", theme);
@@ -279,6 +285,10 @@ export default function ChatApp() {
     );
 
     setStreaming("");
+  }
+
+  if (!mounted) {
+    return <main className="h-screen bg-white" />;
   }
 
   return (

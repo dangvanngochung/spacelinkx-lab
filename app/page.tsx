@@ -1,20 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import PasswordGate from "@/components/PasswordGate";
 import ChatApp from "@/components/ChatApp";
 import GoogleAuthGate from "@/components/GoogleAuthGate";
 
-export default function Page() {
-  const [googleOk, setGoogleOk] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("slx_google_login") === "1";
-  });
+const subscribe = (onStoreChange: () => void) => {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener("slx-unlock-changed", onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener("slx-unlock-changed", onStoreChange);
+  };
+};
+const getServerSnapshot = () => false;
+const getUnlockSnapshot = () => localStorage.getItem("slx_unlock") === "1";
 
-  const [ok, setOk] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("slx_unlock") === "1";
-  });
+export default function Page() {
+  const ok = useSyncExternalStore(subscribe, getUnlockSnapshot, getServerSnapshot);
 
   if (!googleOk) {
     return (
@@ -25,7 +28,11 @@ export default function Page() {
   }
 
   if (!ok) {
-    return <PasswordGate onUnlock={() => setOk(true)} />;
+    return (
+      <PasswordGate
+        onUnlock={() => window.dispatchEvent(new Event("slx-unlock-changed"))}
+      />
+    );
   }
 
   return <ChatApp />;
