@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Folder, FolderPlus, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { ArrowRightLeft, Check, Folder, FolderPlus, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Thread } from "@/types/chat";
 
@@ -37,6 +37,7 @@ export default function Sidebar({
   const [editingId, setEditingId] = useState("");
   const [draftTitle, setDraftTitle] = useState("");
   const [newFolder, setNewFolder] = useState("");
+  const [movingId, setMovingId] = useState("");
 
   function createFolder() {
     const name = newFolder.trim().toLowerCase();
@@ -131,9 +132,25 @@ export default function Sidebar({
                   </select>
                 </div>
               ) : (
-                <button onClick={() => setActiveId(t.id)} className="flex-1 text-left truncate text-sm">
-                  {t.title}
-                </button>
+                <div className="flex-1 min-w-0">
+                  <button onClick={() => setActiveId(t.id)} className="w-full text-left truncate text-sm">
+                    {t.title}
+                  </button>
+                  {movingId === t.id && (
+                    <select
+                      value={t.folder ?? "general"}
+                      onChange={(e) => {
+                        moveThreadFolder(t.id, e.target.value);
+                        setMovingId("");
+                      }}
+                      className="mt-1 w-full bg-zinc-900 text-xs rounded px-2 py-1 outline-none border border-zinc-700"
+                    >
+                      {folders.map((f) => (
+                        <option key={f}>{f}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
               )}
 
               {editingId === t.id ? (
@@ -143,6 +160,7 @@ export default function Sidebar({
                 </>
               ) : (
                 <>
+                  <button onClick={() => { setMovingId(movingId === t.id ? "" : t.id); }} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-zinc-400 hover:text-white"><ArrowRightLeft size={14} /></button>
                   <button onClick={() => { setEditingId(t.id); setDraftTitle(t.title); }} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-zinc-400 hover:text-white"><Pencil size={14} /></button>
                   <button onClick={() => deleteThread(t.id)} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-zinc-400 hover:text-white"><Trash2 size={15} /></button>
                 </>
