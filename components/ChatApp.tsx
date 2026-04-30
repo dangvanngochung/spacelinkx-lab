@@ -140,20 +140,32 @@ function makeNewThread(): Thread {
 }
 
 export default function ChatApp() {
-  const [threads, setThreads] = useState<Thread[]>(() => {
-    if (typeof window === "undefined") return [makeNewThread()];
-    const stored = loadThreads();
-    return stored.length ? stored : [makeNewThread()];
-  });
+  const [threads, setThreads] = useState<Thread[]>(() => [makeNewThread()]);
   const [activeId, setActiveId] = useState(() => threads[0]?.id ?? "");
   const [msg, setMsg] = useState("");
   const [streaming, setStreaming] = useState("");
   const [model, setModel] = useState("gpt-4.1-mini");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesRef = useRef<HTMLDivElement | null>(null);
-
+  const hasHydrated = useRef(false);
 
   useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      const stored = loadThreads();
+      const nextThreads = stored.length ? stored : [makeNewThread()];
+
+      setThreads(nextThreads);
+      setActiveId((prev) =>
+        prev && nextThreads.some((thread) => thread.id === prev) ? prev : nextThreads[0].id,
+      );
+      hasHydrated.current = true;
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated.current) return;
     saveThreads(threads);
   }, [threads]);
 
