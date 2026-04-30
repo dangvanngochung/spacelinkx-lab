@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import PasswordGate from "@/components/PasswordGate";
 import ChatApp from "@/components/ChatApp";
+import GoogleAuthGate from "@/components/GoogleAuthGate";
 
 const subscribe = (onStoreChange: () => void) => {
   window.addEventListener("storage", onStoreChange);
@@ -17,6 +18,14 @@ const getUnlockSnapshot = () => localStorage.getItem("slx_unlock") === "1";
 
 export default function Page() {
   const ok = useSyncExternalStore(subscribe, getUnlockSnapshot, getServerSnapshot);
+
+  if (!googleOk) {
+    return (
+      <main className="min-h-screen bg-zinc-50 flex items-center justify-center p-6">
+        <GoogleAuthGate onSuccess={() => setGoogleOk(true)} />
+      </main>
+    );
+  }
 
   if (!ok) {
     return (

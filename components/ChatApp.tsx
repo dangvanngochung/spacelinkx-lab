@@ -136,6 +136,7 @@ function makeNewThread(): Thread {
     title: "New chat",
     createdAt: Date.now(),
     folder: "general",
+    pinned: false,
     messages: [],
   };
 }
@@ -155,6 +156,10 @@ export default function ChatApp() {
   const [msg, setMsg] = useState("");
   const [streaming, setStreaming] = useState("");
   const [model, setModel] = useState("gpt-4.1-mini");
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === "undefined") return "slx-light";
+    return localStorage.getItem("slx_theme") ?? "slx-light";
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesRef = useRef<HTMLDivElement | null>(null);
   const [folders, setFolders] = useState<string[]>(() => {
@@ -174,6 +179,10 @@ export default function ChatApp() {
     if (!mounted) return;
     saveFolders(folders);
   }, [folders, mounted]);
+
+  useEffect(() => {
+    localStorage.setItem("slx_theme", theme);
+  }, [theme]);
 
 
   useEffect(() => {
@@ -206,6 +215,19 @@ export default function ChatApp() {
   }
 
   const active = threads.find((x) => x.id === activeId);
+
+  function deleteFolder(name: string) {
+    const target = name.trim().toLowerCase();
+    if (!target || target === "general") return;
+
+    const impacted = threads.filter((t) => (t.folder ?? "general") === target).length;
+    const ok = confirm(`Delete folder "${target}"? ${impacted} thread(s) will be moved to general.`);
+    if (!ok) return;
+
+    setFolders((prev) => prev.filter((f) => f !== target));
+    setThreads((prev) => prev.map((t) => ((t.folder ?? "general") === target ? { ...t, folder: "general" } : t)));
+    setActiveFolder((prev) => (prev === target ? "all" : prev));
+  }
 
   async function send() {
     if (!msg.trim() || !activeId) return;
@@ -270,7 +292,7 @@ export default function ChatApp() {
   }
 
   return (
-    <main className="h-screen flex bg-white text-zinc-900">
+    <main className={`h-screen flex ${theme}`}>
       <div className={`fixed inset-0 z-40 md:hidden ${sidebarOpen ? "" : "pointer-events-none"}`}>
         <div
           onClick={() => setSidebarOpen(false)}
@@ -305,6 +327,10 @@ export default function ChatApp() {
               const normalized = name.trim().toLowerCase();
               setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
             }}
+            deleteFolder={deleteFolder}
+            togglePinThread={(id: string) => {
+              setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, pinned: !t.pinned } : t)));
+            }}
           />
         </div>
       </div>
@@ -331,11 +357,15 @@ export default function ChatApp() {
             const normalized = name.trim().toLowerCase();
             setFolders((prev) => Array.from(new Set(["general", ...prev, normalized])));
           }}
+          deleteFolder={deleteFolder}
+          togglePinThread={(id: string) => {
+            setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, pinned: !t.pinned } : t)));
+          }}
         />
       </div>
 
       <section className="flex-1 flex flex-col min-w-0">
-        <Topbar model={model} setModel={setModel} />
+        <Topbar model={model} setModel={setModel} theme={theme} setTheme={setTheme} />
 
         <div className="md:hidden border-b border-zinc-200 px-4 py-2 flex justify-between">
           <button onClick={() => setSidebarOpen(true)} className="inline-flex items-center gap-2 text-sm text-zinc-700">

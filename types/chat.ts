@@ -8,5 +8,6 @@ export type Thread = {
   title: string;
   createdAt: number;
   folder?: string;
+  pinned?: boolean;
   messages: Msg[];
 };
